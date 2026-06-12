@@ -12,6 +12,7 @@
     'autofocus' => \Filament\Support\View\Components\ModalComponent::$isAutofocused,
     'closeButton' => \Filament\Support\View\Components\ModalComponent::$hasCloseButton,
     'closeByClickingAway' => \Filament\Support\View\Components\ModalComponent::$isClosedByClickingAway,
+    'clickThrough' => false,
     'closeByEscaping' => \Filament\Support\View\Components\ModalComponent::$isClosedByEscaping,
     'closeEventName' => 'close-modal',
     'closeQuietlyEventName' => 'close-modal-quietly',
@@ -61,6 +62,7 @@
 
     $wireSubmitHandler = $attributes->get('wire:submit.prevent');
     $attributes = $attributes->except(['wire:submit.prevent']);
+    $isClickThrough = $clickThrough && ! $closeByClickingAway;
 @endphp
 
 @if ($trigger)
@@ -113,7 +115,9 @@
     }"
     x-cloak
     x-show="isOpen"
-    x-trap.noscroll{{ $autofocus ? '' : '.noautofocus' }}="isOpen"
+    @unless ($isClickThrough)
+        x-trap.noscroll{{ $autofocus ? '' : '.noautofocus' }}="isOpen"
+    @endunless
     {{
         $attributes->class([
             'fi-modal',
@@ -124,19 +128,22 @@
             'fi-modal-has-sticky-header' => $stickyHeader,
             'fi-modal-has-sticky-footer' => $stickyFooter,
             'fi-width-screen' => $width === Width::Screen,
+            'pointer-events-none' => $isClickThrough,
         ])
     }}
 >
-    <div
-        aria-hidden="true"
-        x-show="isOpen"
-        x-transition.duration.300ms.opacity
-        {{
-            ($extraModalOverlayAttributeBag ?? new \Illuminate\View\ComponentAttributeBag)->class([
-                'fi-modal-close-overlay',
-            ])
-        }}
-    ></div>
+    @unless ($isClickThrough)
+        <div
+            aria-hidden="true"
+            x-show="isOpen"
+            x-transition.duration.300ms.opacity
+            {{
+                ($extraModalOverlayAttributeBag ?? new \Illuminate\View\ComponentAttributeBag)->class([
+                    'fi-modal-close-overlay',
+                ])
+            }}
+        ></div>
+    @endunless
 
     <div
         @if ($closeByClickingAway)
@@ -145,6 +152,7 @@
         @class([
             'fi-modal-window-ctn',
             'fi-clickable' => $closeByClickingAway,
+            'pointer-events-none' => $isClickThrough,
         ])
     >
         <{{ filled($wireSubmitHandler) ? 'form' : 'div' }}
