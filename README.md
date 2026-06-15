@@ -13,7 +13,7 @@
     <a href="https://trendshift.io/repositories/238" target="_blank"><img src="https://trendshift.io/api/badge/repositories/238" alt="filamentphp%2Ffilament | Trendshift" style="width: 250px; height: 55px;" /></a>
 </p>
 
-**Build apps & admin panels fast, for your bright ideas.**
+**Build apps & admin panels fast, for your brights ideas.**
 
 With a solid Laravel foundation and a polished UI, you can focus on what makes your product unique. Filament gives you UI components that you won't outgrow — a cohesive set of well-considered building blocks that adapt as your application grows in complexity.
 
