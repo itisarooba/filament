@@ -829,6 +829,45 @@ In this example, when the user clicks the delete button on a repeater item, the 
 
 <AutoScreenshot name="actions/modal/overlaying-child" alt="Child confirmation modal overlaying a parent slide-over" version="4.x" />
 
+## Dismissing a modal to cancel parent actions
+
+When a modal is dismissed — whether by pressing Escape, clicking the backdrop, or using the close button — by default only that modal is closed, leaving any parent actions still mounted. You can use the `modalDismissesParentActions()` method to change this so that dismissing a child modal also cancels parent actions:
+
+```php
+use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
+
+Action::make('createPost')
+    ->schema([
+        TextInput::make('title')
+            ->required()
+            ->registerActions([
+                Action::make('confirmCreation')
+                    ->requiresConfirmation()
+                    ->modalDismissesParentActions()
+                    ->action(function (): void {
+                        // ...
+                    }),
+            ]),
+    ])
+    ->action(function (array $data): void {
+        // ...
+    })
+```
+
+You can also pass an action name to cancel back to a specific parent action rather than all of them:
+
+```php
+use Filament\Actions\Action;
+
+Action::make('editPostMetadata')
+    ->requiresConfirmation()
+    ->modalDismissesParentActions('createPost')
+    ->action(function (): void {
+        // ...
+    })
+```
+
 ## Optimizing modal configuration methods
 
 When you use database queries or other heavy operations inside modal configuration methods like `modalHeading()`, they can be executed more than once. This is because Filament uses these methods to decide whether to render the modal or not, and also to render the modal's content.
