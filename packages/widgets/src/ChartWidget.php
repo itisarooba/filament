@@ -2,15 +2,19 @@
 
 namespace Filament\Widgets;
 
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Support\RawJs;
 use Illuminate\Contracts\Support\Htmlable;
 use Livewire\Attributes\Locked;
 
-abstract class ChartWidget extends Widget implements HasSchemas
+abstract class ChartWidget extends Widget implements HasSchemas, HasActions
 {
     use Concerns\CanPoll;
+    use ChartWidget\Concerns\HasEmptyState;
+    use InteractsWithActions;
     use InteractsWithSchemas;
 
     /**
@@ -126,5 +130,10 @@ abstract class ChartWidget extends Widget implements HasSchemas
     public function isCollapsible(): bool
     {
         return $this->isCollapsible;
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->getCachedData());
     }
 }

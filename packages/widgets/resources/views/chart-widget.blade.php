@@ -10,6 +10,7 @@
     $type = $this->getType();
     $maxHeight = $this->getMaxHeight();
     $hasMaxHeight = filled($maxHeight) && $maxHeight !== '100%';
+    $isEmpty = $this->isEmpty();
 @endphp
 
 <x-filament-widgets::widget class="fi-wi-chart">
@@ -72,6 +73,9 @@
             @if ($pollingInterval = $this->getPollingInterval())
                 wire:poll.{{ $pollingInterval }}="updateChartData"
             @endif
+            @if ($isEmpty)
+                style="display: none"
+            @endif
         >
             <div
                 x-load
@@ -122,5 +126,40 @@
                 ></span>
             </div>
         </div>
+
+        @if ($isEmpty)
+            @if ($emptyState = $this->getEmptyState())
+                {{ $emptyState }}
+            @else
+                <div class="fi-wi-chart-empty-state">
+                    <div class="fi-wi-chart-empty-state-content">
+                        <div class="fi-wi-chart-empty-state-icon-bg">
+                            {{ \Filament\Support\generate_icon_html($this->getEmptyStateIcon(), size: \Filament\Support\Enums\IconSize::Large) }}
+                        </div>
+
+                        <h2 class="fi-wi-chart-empty-state-heading">
+                            {{ $this->getEmptyStateHeading() }}
+                        <h2>
+
+                        @if (filled($emptyStateDescription = $this->getEmptyStateDescription()))
+                            <p class="fi-wi-chart-empty-state-description">
+                                {{ $emptyStateDescription }}
+                            </p>
+                        @endif
+
+                        @if ($emptyStateActions = array_filter(
+                            $this->getEmptyStateActions(),
+                            fn (\Filament\Actions\Action | \Filament\Actions\ActionGroup $action): bool => $action->isVisible()
+                        ))
+                            <div class="fi-wi-chart-actions fi-align-center fi-wrapped">
+                                @foreach ($emptyStateActions as $action)
+                                    {{ $action }}
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @endif
     </x-filament::section>
 </x-filament-widgets::widget>
